@@ -40,7 +40,7 @@ jobs:
       - uses: actions4gh/configure-wiki@v1
       - uses: actions4gh/deploy-wiki@v1
   commit-wiki:
-    if: github.event_name != 'gollum'
+    if: github.event_name == 'gollum'
     permissions:
       contents: write
     runs-on: ubuntu-latest
