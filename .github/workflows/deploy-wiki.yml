@@ -25,7 +25,9 @@ on:
     branches: 
       - main
       - feature-deploy-github-wiki
-    paths: wiki/**
+    paths: 
+      - 'wiki/**'
+      - '.github/workflows/deploy-wiki.yml'
   gollum:
   schedule:
     - cron: "*/10 * * * *"
