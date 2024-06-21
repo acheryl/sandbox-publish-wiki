@@ -1,3 +1,64 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - feature-MAPT-363-docs-for-app-migration
+    paths:
+      - 'docs/**'
+      - '.github/workflows/publish-wiki.yml'
+  repository_dispatch:
+    types: [docs]
+  gollum:
+
+env:
+  GIT_AUTHOR_NAME: Actionbot
+  GIT_AUTHOR_EMAIL: actions@github.com
+
+jobs:
+  job-sync-docs-to-wiki:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'gollum'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      # - name: configure git
+      #   run: |
+      #     git config --global url."https://${{secrets.MY_TOKEN}}@github.com".insteadOf "https://github.com"
+      - name: Sync docs to wiki
+        uses: newrelic/wiki-sync-action@main
+        with:
+          source: docs
+          destination: wiki
+          token: ${{ github.token }}
+          # gitAuthorName: ${{ env.GIT_AUTHOR_NAME }}
+          # gitAuthorEmail: ${{ env.GIT_AUTHOR_EMAIL }}
+  
+  job-sync-wiki-to-docs:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'gollum'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MY_TOKEN }} 
+          ref: develop
+      - name: Sync Wiki to Docs
+        uses: newrelic/wiki-sync-action@main
+        with:
+          source: wiki
+          destination: docs
+          token: ${{ github.token }}
+          # gitAuthorName: ${{ env.GIT_AUTHOR_NAME }}
+          # gitAuthorEmail: ${{ env.GIT_AUTHOR_EMAIL }}
+          branch: feature-deploy-github-wiki
+
+
+
+
+
+
+
 # Source: https://github.com/marketplace/actions/deploy-github-wiki
 
 # name: deploy-wiki
@@ -19,39 +80,39 @@
 
 # Bi-directional Wiki Sync
 # Source: https://github.com/marketplace/actions/deploy-github-wiki
-name: Sync wiki
-on:
-  push:
-    branches: 
-      - main
-      - feature-deploy-github-wiki
-    paths: 
-      - 'wiki/**'
-      - '.github/workflows/deploy-wiki.yml'
-  gollum:
-  schedule:
-    - cron: "*/10 * * * *"
-jobs:
-  deploy-wiki:
-    if: github.event_name == 'push'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions4gh/configure-wiki@v1
-      - uses: actions4gh/deploy-wiki@v1
-  commit-wiki:
-    if: github.event_name == 'gollum'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          repository: acheryl/sandbox-publish-wiki.wiki
-          path: wiki
-      - run: rm -rf wiki/.git
-      - uses: actions4gh/configure-wiki/reverse@v1
-      - uses: actions4git/add-commit-push@v1
+# name: Sync wiki
+# on:
+#   push:
+#     branches: 
+#       - main
+#       - feature-deploy-github-wiki
+#     paths: 
+#       - 'wiki/**'
+#       - '.github/workflows/deploy-wiki.yml'
+#   gollum:
+#   schedule:
+#     - cron: "*/10 * * * *"
+# jobs:
+#   deploy-wiki:
+#     if: github.event_name == 'push'
+#     permissions:
+#       contents: write
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions4gh/configure-wiki@v1
+#       - uses: actions4gh/deploy-wiki@v1
+#   commit-wiki:
+#     if: github.event_name != 'push'
+#     permissions:
+#       contents: write
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/checkout@v4
+#         with:
+#           repository: acheryl/sandbox-publish-wiki.wiki
+#           path: wiki
+#       - run: rm -rf wiki/.git
+#       - uses: actions4gh/configure-wiki/reverse@v1
+#       - uses: actions4git/add-commit-push@v1
