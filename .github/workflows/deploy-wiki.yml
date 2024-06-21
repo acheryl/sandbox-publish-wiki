@@ -3,10 +3,10 @@ name: Documentation
 on:
   push:
     branches:
-      - feature-MAPT-363-docs-for-app-migration
+      - feature-deploy-github-wiki
     paths:
       - 'docs/**'
-      - '.github/workflows/publish-wiki.yml'
+      - '.github/workflows/deploy-wiki.yml'
   repository_dispatch:
     types: [docs]
   gollum:
