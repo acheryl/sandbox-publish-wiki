@@ -1,3 +1,3 @@
-Sandbox Wiki testing
+Sandbox Wiki
 
 Testing Bi-directional workflow
